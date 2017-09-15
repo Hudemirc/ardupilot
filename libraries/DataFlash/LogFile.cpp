@@ -987,6 +987,57 @@ void DataFlash_Class::Log_Write_Vibration(const AP_InertialSensor &ins)
     WriteBlock(&pkt, sizeof(pkt));
 }
 
+void DataFlash_Class::Log_Write_MotorConstAdp1(const AC_AttitudeControl &attitude_control)
+{
+    struct log_MotorConstAdp1 pkt = {
+        LOG_PACKET_HEADER_INIT(LOG_MOTCNST1_MSG),
+        p1_adp_data       : attitude_control.get_p_adp1(),
+        p2_adp_data       : attitude_control.get_p_adp2(),
+        p3_adp_data       : attitude_control.get_p_adp3(),
+        p4_adp_data       : attitude_control.get_p_adp4(),
+        q1_adp_data       : attitude_control.get_q_adp1(),
+        q2_adp_data       : attitude_control.get_q_adp2(),
+        q3_adp_data       : attitude_control.get_q_adp3(),
+        q4_adp_data       : attitude_control.get_q_adp4()
+    };
+    WriteBlock(&pkt, sizeof(pkt));
+}
+
+void DataFlash_Class::Log_Write_MotorConstAdp2(const AC_AttitudeControl &attitude_control)
+{
+    struct log_MotorConstAdp2 pkt = {
+        LOG_PACKET_HEADER_INIT(LOG_MOTCNST2_MSG),
+        Projection_data   : attitude_control.get_motorProjection(),
+        kpkdratio_data    : attitude_control.get_kpkdratio(),
+        pgain_data        : attitude_control.get_pgainadp(),
+        rollpidbef_data   : attitude_control.get_rollpidbefore(),
+        rollpidaft_data   : attitude_control.get_rollpidafter(),
+        ptchpidbef_data   : attitude_control.get_pitchpidbefore(),
+        ptchpidaft_data   : attitude_control.get_pitchpidafter(),
+        yawpidbef_data    : attitude_control.get_yawpidbefore(),
+        yawpidaft_data    : attitude_control.get_yawpidafter(),
+        thrpidbef_data    : attitude_control.get_thrustpidbefore(),
+        thrpidaft_data    : attitude_control.get_thrustpidafter()
+    };
+    WriteBlock(&pkt, sizeof(pkt));
+}
+
+void DataFlash_Class::Log_Write_MotorConstAdp3(const AC_AttitudeControl &attitude_control)
+{
+    struct log_MotorConstAdp3 pkt = {
+        LOG_PACKET_HEADER_INIT(LOG_MOTCNST3_MSG),
+        sinroll_data   : attitude_control.get_sindistroll(),
+        ksi0_data      : attitude_control.get_ksi0(),
+        ksi1_data      : attitude_control.get_ksi1(),
+        ksi2_data      : attitude_control.get_ksi2(),
+        beta0_data      : attitude_control.get_beta0(),
+        beta1_data      : attitude_control.get_beta1(),
+        beta2_data      : attitude_control.get_beta2(),
+        gyroxx_data     : attitude_control.get_gyroxdata()
+    };
+    WriteBlock(&pkt, sizeof(pkt));
+}
+
 // Write a mission command. Total length : 36 bytes
 bool DataFlash_Backend::Log_Write_Mission_Cmd(const AP_Mission &mission,
                                               const AP_Mission::Mission_Command &cmd)

@@ -367,6 +367,27 @@ public:
 
         // 254,255: reserved
 
+        // 260: Parameter for ADP
+
+        k_param_motorConstantProjection1 = 261,        
+        k_param_p_gain_adp1,
+        k_param_beta_gain_adp1,
+        k_param_q_gain_adp1,
+        k_param_kpkdratioadp1,
+        k_param_adp_resetting,
+        k_param_adpsin_res,
+        k_param_gmatrixadp1,
+        k_param_gmatrixadp2,
+        k_param_gmatrixadp3,
+        k_param_gmatrixadp4,
+        k_param_gmatrixadp5,
+        k_param_gmatrixadp6,
+       // k_param_gmatrixadp7,
+       // k_param_gmatrixadp8,
+       // k_param_gmatrixadp9,
+       // k_param_gmatrixadp10,
+        k_param_lmatrixadp,
+
         // the k_param_* space is 9-bits in size
         // 511: reserved
     };
@@ -478,6 +499,26 @@ public:
 
     AC_P                    p_pos_xy;
     AC_P                    p_alt_hold;
+
+    //PARAMETERS FOR ADAPTIVE
+    AP_Float                motorConstantProjection1;
+    AP_Float                p_gain_adp1;
+    AP_Float                beta_gain_adp1;
+    AP_Float                q_gain_adp1;
+    AP_Float                kpkdratioadp1;
+    AP_Float                adp_resetting;
+    AP_Float                adpsin_res;
+    AP_Float                gmatrixadp1;
+    AP_Float                gmatrixadp2;
+    AP_Float                gmatrixadp3;
+    AP_Float                gmatrixadp4;
+    AP_Float                gmatrixadp5;
+    AP_Float                gmatrixadp6;
+    //AP_Float                gmatrixadp7;
+    //AP_Float                gmatrixadp8;
+    //AP_Float                gmatrixadp9;
+    //AP_Float                gmatrixadp10;
+    AP_Float                lmatrixadp;
 
     // Autotune
     AP_Int8                 autotune_axis_bitmask;

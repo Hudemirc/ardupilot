@@ -115,6 +115,9 @@ public:
     void Log_Write_IMU(const AP_InertialSensor &ins);
     void Log_Write_IMUDT(const AP_InertialSensor &ins, uint64_t time_us, uint8_t imu_mask);
     void Log_Write_Vibration(const AP_InertialSensor &ins);
+    void Log_Write_MotorConstAdp1(const AC_AttitudeControl &attitude_control);
+    void Log_Write_MotorConstAdp2(const AC_AttitudeControl &attitude_control);
+    void Log_Write_MotorConstAdp3(const AC_AttitudeControl &attitude_control);
     void Log_Write_RCIN(void);
     void Log_Write_RCOUT(void);
     void Log_Write_RSSI(AP_RSSI &rssi);

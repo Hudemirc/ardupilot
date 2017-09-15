@@ -12,6 +12,10 @@
 #include <AC_PID/AC_PID.h>
 #include <AC_PID/AC_P.h>
 
+#define no_sinusoidal       2
+
+
+
 #define AC_ATTITUDE_CONTROL_ANGLE_P                     4.5f             // default angle P gain for roll, pitch and yaw
 
 #define AC_ATTITUDE_ACCEL_RP_CONTROLLER_MIN_RADSS       radians(40.0f)   // minimum body-frame acceleration limit for the stability controller (for roll and pitch axis)
@@ -131,6 +135,9 @@ public:
     // Run angular velocity controller and send outputs to the motors
     virtual void rate_controller_run() = 0;
 
+    // Run angular velocity controller and send outputs to the motors
+    virtual void rate_controller_runadp() = 0;
+
     // Convert a 321-intrinsic euler angle derivative to an angular velocity vector
     void euler_rate_to_ang_vel(const Vector3f& euler_rad, const Vector3f& euler_rate_rads, Vector3f& ang_vel_rads);
 
@@ -152,6 +159,21 @@ public:
 
     // Set x-axis angular velocity in centidegrees/s
     void rate_bf_roll_target(float rate_cds) { _rate_target_ang_vel.x = radians(rate_cds*0.01f); }
+
+    //ADAPTIVE
+
+    void set_motorConstantProjection(float motorConstantProjection){_motorConstantProjection=motorConstantProjection;}
+    void set_p_gainadp(float p_gainadp){_p_gainadp=p_gainadp;}
+    void set_beta_gainadp(float beta_gainadp){_beta_gainadp=beta_gainadp;}
+    void set_q_gainadp(float q_gainadp){_q_gainadp=q_gainadp*_p_gainadp;}
+    void set_kpkdratioadp(float kpkdratioadp){_kpkdratioadp=kpkdratioadp;}
+    void set_reset_adp(float resettingvalueadp){_resetting_adp_values=resettingvalueadp;}
+    void set_reset_adp_sin(float resettingvalueadpsin){_resetting_adp_sin_values=resettingvalueadpsin;}
+    void set_gmatrixadp1(float gmatrixadp1adp,float gmatrixadp2adp,float gmatrixadp3adp,float gmatrixadp4adp,float gmatrixadp5adp,float gmatrixadp6adp,float gmatrixadp7adp,float gmatrixadp8adp,float gmatrixadp9adp,float gmatrixadp10adp){_gmatrixgainsadp[0]=gmatrixadp1adp;_gmatrixgainsadp[1]=gmatrixadp2adp;_gmatrixgainsadp[2]=gmatrixadp3adp;_gmatrixgainsadp[3]=gmatrixadp4adp;_gmatrixgainsadp[4]=gmatrixadp5adp;_gmatrixgainsadp[5]=gmatrixadp6adp;_gmatrixgainsadp[6]=gmatrixadp7adp;_gmatrixgainsadp[7]=gmatrixadp8adp;_gmatrixgainsadp[8]=gmatrixadp9adp;_gmatrixgainsadp[9]=gmatrixadp10adp;}
+    void set_lmatrixadp(float lmatrixadpadp){_lmatrixadp=lmatrixadpadp;}
+    void set_lmatrix(){_Lmatrix[no_sinusoidal-1]=_lmatrixadp;}
+    void set_gmatrix(){for(int i=0;i<no_sinusoidal;i++){_Gmatrix[no_sinusoidal*(no_sinusoidal-1)+i]=-_gmatrixgainsadp[i];} }
+    void initialize_gmatrix(){for(int i=0;i<(no_sinusoidal-1);i++){_Gmatrix[no_sinusoidal*i+i+1]=1.0f;} }
 
     // Set y-axis angular velocity in centidegrees/s
     void rate_bf_pitch_target(float rate_cds) { _rate_target_ang_vel.y = radians(rate_cds*0.01f); }
@@ -263,6 +285,36 @@ public:
     // User settable parameters
     static const struct AP_Param::GroupInfo var_info[];
 
+    float               get_p_adp1() const  { return (_p_adp1); }
+    float               get_p_adp2() const { return _p_adp2; }
+    float               get_p_adp3() const { return _p_adp3; }
+    float               get_p_adp4() const { return _p_adp4; }
+    float               get_q_adp1() const { return _q_adp1; }
+    float               get_q_adp2() const { return _q_adp2; }
+    float               get_q_adp3() const { return _q_adp3; }
+    float               get_q_adp4() const { return _q_adp4; }
+    float               get_motorProjection() const { return _motorConstantProjection; }
+    float               get_kpkdratio() const { return _kpkdratioadp; }
+    float               get_pgainadp() const { return _p_gainadp; }
+    float               get_rollpidbefore()const { return _rollpidbefore;}
+    float               get_rollpidafter()const { return _rollpidafter;}
+    float               get_pitchpidbefore()const { return _pitchpidbefore;}
+    float               get_pitchpidafter()const { return _pitchpidafter;}
+    float               get_yawpidbefore()const { return _yawpidbefore;}
+    float               get_yawpidafter()const { return _yawpidafter;}
+    float               get_thrustpidbefore()const { return _thrpidbefore;}
+    float               get_thrustpidafter()const { return _thrpidafter;}
+    float               get_sindistroll()const { return _sin_dist_roll;}
+    float               get_ksi0()const { return _ksi_roll[0];}
+    float               get_ksi1()const { return _ksi_roll[1];}
+    float               get_ksi2()const { return _ksi_roll[2];}
+    float               get_beta0()const { return _beta_roll[0];}
+    float               get_beta1()const { return _beta_roll[1];}
+    float               get_beta2()const { return _beta_roll[2];}
+    float               get_gyroxdata()const { return _gyroxdata;}
+
+
+
 protected:
 
     // Update rate_target_ang_vel using attitude_error_rot_vec_rad
@@ -352,6 +404,48 @@ protected:
 
     // throttle provided as input to attitude controller.  This does not include angle boost.
     float               _throttle_in = 0.0f;
+
+    //FOR ADAPTIVE CONTROLLER
+
+    float               _motorConstantProjection;
+    float               _p_gainadp;
+    float               _q_gainadp;
+    float               _beta_gainadp;
+    float               _error_roll_adp[2];
+    float               _error_pitch_adp[2];
+    float               _error_yaw_adp[2];
+    float               _kpkdratioadp;
+    float               _p_adp1=1.0f;
+    float               _p_adp2=1.0f;
+    float               _p_adp3=1.0f;
+    float               _p_adp4=1.0f;
+    float               _q_adp1=0.5f;
+    float               _q_adp2=0.5f;
+    float               _q_adp3=0.5f;
+    float               _q_adp4=0.5f;
+    float               _rollpidbefore;
+    float               _rollpidafter;
+    float               _pitchpidbefore;
+    float               _pitchpidafter;
+    float               _yawpidbefore;
+    float               _yawpidafter;
+    float               _thrpidbefore;
+    float               _thrpidafter;
+    float               _resetting_adp_values;
+    float               _resetting_adp_sin_values;
+    float               _beta_roll[no_sinusoidal];
+    float               _beta1_roll[no_sinusoidal];    
+    float               _ksi_roll[no_sinusoidal];
+    float               _eta0_roll[no_sinusoidal];
+    float               _eta1_roll[no_sinusoidal];
+    float               _Lmatrix[no_sinusoidal];
+    float               _Gmatrix[no_sinusoidal*no_sinusoidal];
+    float               _gmatrixgainsadp[10];
+    float               _lmatrixadp;
+    float               _sin_dist_roll;
+    float               _gyroxdata;
+
+    
 
     // This represents the throttle increase applied for tilt compensation.
     // Used only for logging.

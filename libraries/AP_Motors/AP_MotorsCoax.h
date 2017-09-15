@@ -56,6 +56,8 @@ protected:
     // output - sends commands to the motors
     void                output_armed_stabilizing();
 
+    void                output_armed_stabilizingadp(){};
+
     float               _actuator_out[NUM_ACTUATORS]; // combined roll, pitch, yaw and throttle outputs to motors in 0~1 range
     float               _thrust_yt_ccw;
     float               _thrust_yt_cw;

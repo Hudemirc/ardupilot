@@ -103,6 +103,7 @@ enum control_mode_t {
     THROW =        18,  // throw to launch mode using inertial/GPS system, no pilot input
     AVOID_ADSB =   19,  // automatic avoidance of obstacles in the macro scale - e.g. full-sized aircraft
     GUIDED_NOGPS = 20,  // guided mode but only accepts attitude and altitude
+    STABILIZEADP = 22,  // MY NEW ADAPTIVE CONTROLLER
 };
 
 enum mode_reason_t {
@@ -166,7 +167,7 @@ enum tuning_func {
     TUNING_RATE_ROLL_FF =               53, // body frame roll rate controller FF term
     TUNING_RATE_YAW_FF =                54, // body frame yaw rate controller FF term
     TUNING_RATE_MOT_YAW_HEADROOM =      55, // motors yaw headroom minimum
-    TUNING_RATE_YAW_FILT =              56  // yaw rate input filter
+    TUNING_RATE_YAW_FILT =              56, // yaw rate input filter
 };
 
 // Acro Trainer types

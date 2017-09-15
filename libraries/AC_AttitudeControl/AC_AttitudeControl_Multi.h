@@ -73,6 +73,7 @@ public:
 
     // run lowest level body-frame rate controller and send outputs to the motors
     void rate_controller_run();
+    void rate_controller_runadp();
 
     // sanity check parameters.  should be called once before take-off
     void parameter_sanity_check();

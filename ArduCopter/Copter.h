@@ -678,6 +678,7 @@ private:
     void send_extended_status1(mavlink_channel_t chan);
     void send_location(mavlink_channel_t chan);
     void send_nav_controller_output(mavlink_channel_t chan);
+    void send_motorconstadp(mavlink_channel_t chan);
     void send_simstate(mavlink_channel_t chan);
     void send_hwstatus(mavlink_channel_t chan);
     void send_vfr_hud(mavlink_channel_t chan);
@@ -914,6 +915,8 @@ private:
     void sport_run();
     bool stabilize_init(bool ignore_checks);
     void stabilize_run();
+    bool stabilizeadp_init(bool ignore_checks);
+    void stabilizeadp_run();
     void crash_check();
     void parachute_check();
     void parachute_release();
@@ -981,6 +984,7 @@ private:
     bool init_arm_motors(bool arming_from_gcs);
     void init_disarm_motors();
     void motors_output();
+    void motors_outputadp();
     void lost_vehicle_check();
     void run_nav_updates(void);
     void calc_distance_and_bearing();

@@ -307,6 +307,41 @@ void Copter::motors_output()
         motors->output();
     }
 }
+//For Adaptive Controller
+void Copter::motors_outputadp()
+{
+#if ADVANCED_FAILSAFE == ENABLED
+    // this is to allow the failsafe module to deliberately crash 
+    // the vehicle. Only used in extreme circumstances to meet the
+    // OBC rules
+    if (g2.afs.should_crash_vehicle()) {
+        g2.afs.terminate_vehicle();
+        return;
+    }
+#endif
+
+    // Update arming delay state
+    if (ap.in_arming_delay && (!motors->armed() || millis()-arm_time_ms > ARMING_DELAY_SEC*1.0e3f || control_mode == THROW)) {
+        ap.in_arming_delay = false;
+    }
+
+    // check if we are performing the motor test
+    if (ap.motor_test) {
+        motor_test_output();
+    } else {
+        bool interlock = motors->armed() && !ap.in_arming_delay && (!ap.using_interlock || ap.motor_interlock_switch) && !ap.motor_emergency_stop;
+        if (!motors->get_interlock() && interlock) {
+            motors->set_interlock(true);
+            Log_Write_Event(DATA_MOTORS_INTERLOCK_ENABLED);
+        } else if (motors->get_interlock() && !interlock) {
+            motors->set_interlock(false);
+            Log_Write_Event(DATA_MOTORS_INTERLOCK_DISABLED);
+        }
+
+        // send output signals to motors
+        motors->outputadp();
+    }
+}
 
 // check for pilot stick input to trigger lost vehicle alarm
 void Copter::lost_vehicle_check()

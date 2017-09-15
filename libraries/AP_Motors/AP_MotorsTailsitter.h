@@ -37,6 +37,8 @@ protected:
     // calculate motor outputs
     void output_armed_stabilizing();
 
+    void                output_armed_stabilizingadp(){};
+
     // calculated outputs
     float _aileron;  // -1..1
     float _elevator; // -1..1

@@ -39,6 +39,9 @@ public:
     // output - sends commands to the motors
     virtual void        output();
 
+    // output - sends commands to the motors //ADAPTIVE
+    virtual void        outputadp();
+
     // output_min - sends minimum values out to the motors
     void                output_min();
 

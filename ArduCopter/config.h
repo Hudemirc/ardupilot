@@ -647,3 +647,61 @@
 #ifndef ADVANCED_FAILSAFE
 # define ADVANCED_FAILSAFE DISABLED
 #endif
+
+//PARAMETERS FOR ADAPTIVE
+#ifndef ADP_MOT_CNST_PRJ_DEFAULT
+ # define ADP_MOT_CNST_PRJ_DEFAULT      0.4    // default value for my new parameter
+#endif
+
+#ifndef ADP_P_GAIN_DEFAULT
+ # define ADP_P_GAIN_DEFAULT      0.00     // default value for my new parameter
+#endif
+
+#ifndef ADP_BETA_GAIN_DEFAULT
+ # define ADP_BETA_GAIN_DEFAULT      0.00     // default value for my new parameter
+#endif
+
+#ifndef ADP_Q_GAIN_DEFAULT
+ # define ADP_Q_GAIN_DEFAULT      1.00     // default value for my new parameter
+#endif
+
+#ifndef ADP_KPKD_RATIO
+ # define ADP_KPKD_RATIO_DEFAULT      1.0     // default value for my new parameter
+#endif
+
+#ifndef ADP_RESET_VALUES
+ # define ADP_RESET_VALUES_DEFAULT      0.0     // default value for my new parameter
+#endif
+
+#ifndef ADP_SIN_RESET
+ # define ADP_SIN_RESET_DEFAULT      0.0     // default value for my new parameter
+#endif
+
+#ifndef ADP_GMATRIX1
+# define ADP_GMATRIX1_DEFAULT     0.0     // default value for my new parameter
+#endif
+ 
+#ifndef ADP_GMATRIX2
+# define ADP_GMATRIX2_DEFAULT     0.0     // default value for my new parameter
+#endif
+
+
+#ifndef ADP_GMATRIX3
+# define ADP_GMATRIX3_DEFAULT     0.0     // default value for my new parameter
+#endif
+ 
+#ifndef ADP_GMATRIX4
+# define ADP_GMATRIX4_DEFAULT     0.0     // default value for my new parameter
+#endif
+
+#ifndef ADP_GMATRIX5
+# define ADP_GMATRIX5_DEFAULT     0.0     // default value for my new parameter
+#endif
+ 
+#ifndef ADP_GMATRIX6
+# define ADP_GMATRIX6_DEFAULT     0.0     // default value for my new parameter
+#endif
+ 
+#ifndef ADP_LMATRIX
+# define ADP_LMATRIX_DEFAULT     0.0     // default value for my new parameter
+#endif

@@ -600,6 +600,10 @@ float AC_AttitudeControl::rate_target_to_motor_roll(float rate_actual_rads, floa
 
     float integrator = get_rate_roll_pid().get_integrator();
 
+    //ADAPTIVE
+    _error_roll_adp[0]=get_rate_roll_pid().get_p();
+    _error_roll_adp[1]=get_rate_roll_pid().get_d();
+
     // Ensure that integrator can only be reduced if the output is saturated
     if (!_motors.limit.roll_pitch || ((integrator > 0 && rate_error_rads < 0) || (integrator < 0 && rate_error_rads > 0))) {
         integrator = get_rate_roll_pid().get_i();
@@ -623,6 +627,10 @@ float AC_AttitudeControl::rate_target_to_motor_pitch(float rate_actual_rads, flo
 
     float integrator = get_rate_pitch_pid().get_integrator();
 
+    //ADAPTIVE
+    _error_pitch_adp[0]=get_rate_pitch_pid().get_p();
+    _error_pitch_adp[1]=get_rate_pitch_pid().get_d();
+
     // Ensure that integrator can only be reduced if the output is saturated
     if (!_motors.limit.roll_pitch || ((integrator > 0 && rate_error_rads < 0) || (integrator < 0 && rate_error_rads > 0))) {
         integrator = get_rate_pitch_pid().get_i();
@@ -645,6 +653,10 @@ float AC_AttitudeControl::rate_target_to_motor_yaw(float rate_actual_rads, float
     get_rate_yaw_pid().set_desired_rate(rate_target_rads);
 
     float integrator = get_rate_yaw_pid().get_integrator();
+
+    //ADAPTIVE
+    _error_yaw_adp[0]=get_rate_yaw_pid().get_p();
+    _error_yaw_adp[1]=get_rate_yaw_pid().get_d();
 
     // Ensure that integrator can only be reduced if the output is saturated
     if (!_motors.limit.yaw || ((integrator > 0 && rate_error_rads < 0) || (integrator < 0 && rate_error_rads > 0))) {

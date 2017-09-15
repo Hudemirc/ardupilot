@@ -258,11 +258,20 @@ void Copter::fast_loop()
     // update INS immediately to get current gyro data populated
     ins.update();
     
-    // run low level rate controllers that only require IMU data
-    attitude_control->rate_controller_run();
+    
+
+    if (control_mode==STABILIZEADP){
+        attitude_control->rate_controller_runadp();
+        motors_outputadp();
+    }else{
+        // run low level rate controllers that only require IMU data
+        attitude_control->rate_controller_run();
+        motors_output();
+
+    }
 
     // send outputs to the motors library immediately
-    motors_output();
+    
 
     // run EKF state estimator (expensive)
     // --------------------
@@ -405,6 +414,9 @@ void Copter::ten_hz_logging_loop()
     }
     if (should_log(MASK_LOG_IMU) || should_log(MASK_LOG_IMU_FAST) || should_log(MASK_LOG_IMU_RAW)) {
         DataFlash.Log_Write_Vibration(ins);
+        DataFlash.Log_Write_MotorConstAdp1(*attitude_control);
+        DataFlash.Log_Write_MotorConstAdp2(*attitude_control);
+        DataFlash.Log_Write_MotorConstAdp3(*attitude_control);
     }
     if (should_log(MASK_LOG_CTUN)) {
         attitude_control->control_monitor_log();

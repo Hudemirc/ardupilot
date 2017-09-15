@@ -50,6 +50,7 @@ public:
 protected:
     // output - sends commands to the motors
     void                output_armed_stabilizing();
+    void                output_armed_stabilizingadp(){};
 
     // call vehicle supplied thrust compensation if set
     void                thrust_compensation(void) override;

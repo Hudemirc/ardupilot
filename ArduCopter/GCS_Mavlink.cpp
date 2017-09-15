@@ -159,6 +159,22 @@ void NOINLINE Copter::send_location(mavlink_channel_t chan)
         ahrs.yaw_sensor);               // compass heading in 1/100 degree
 }
 
+void NOINLINE Copter::send_motorconstadp(mavlink_channel_t chan)
+{
+    float p1adp=attitude_control->get_p_adp1();
+   
+    mavlink_msg_motorconstadp_send(
+        chan,
+        p1adp,                // in 1E7 degrees
+        p1adp,                // in 1E7 degrees
+        p1adp,      // millimeters above sea level
+        p1adp,           // millimeters above ground
+        p1adp,                          // X speed cm/s (+ve North)
+        p1adp,                          // Y speed cm/s (+ve East)
+        p1adp,                          // Z speed cm/s (+ve up)
+        p1adp);               // compass heading in 1/100 degree
+}
+
 void NOINLINE Copter::send_nav_controller_output(mavlink_channel_t chan)
 {
     const Vector3f &targets = attitude_control->get_att_target_euler_cd();
@@ -399,6 +415,11 @@ bool GCS_MAVLINK_Copter::try_send_message(enum ap_message id)
     case MSG_NAV_CONTROLLER_OUTPUT:
         CHECK_PAYLOAD_SIZE(NAV_CONTROLLER_OUTPUT);
         copter.send_nav_controller_output(chan);
+        break;
+
+    case MSG_MOTORCONSTADP:
+        CHECK_PAYLOAD_SIZE(MOTORCONSTADP);
+        copter.send_motorconstadp(chan);
         break;
 
     case MSG_GPS_RAW:
@@ -652,7 +673,7 @@ const AP_Param::GroupInfo GCS_MAVLINK::var_info[] = {
 
     // @Param: EXTRA3
     // @DisplayName: Extra data type 3 stream rate to ground station
-    // @Description: Stream rate of AHRS, HWSTATUS, SYSTEM_TIME, RANGEFINDER, DISTANCE_SENSOR, TERRAIN_REQUEST, BATTERY2, MOUNT_STATUS, OPTICAL_FLOW, GIMBAL_REPORT, MAG_CAL_REPORT, MAG_CAL_PROGRESS, EKF_STATUS_REPORT, VIBRATION and RPM to ground station
+    // @Description: Stream rate of AHRS, HWSTATUS, SYSTEM_TIME, RANGEFINDER, DISTANCE_SENSOR, TERRAIN_REQUEST, BATTERY2, MOUNT_STATUS, OPTICAL_FLOW, GIMBAL_REPORT, MAG_CAL_REPORT, MAG_CAL_PROGRESS, EKF_STATUS_REPORT, MOTORCONSTADP, VIBRATION and RPM to ground station
     // @Units: Hz
     // @Range: 0 10
     // @Increment: 1
@@ -779,6 +800,7 @@ GCS_MAVLINK_Copter::data_stream_send(void)
         send_message(MSG_MAG_CAL_REPORT);
         send_message(MSG_MAG_CAL_PROGRESS);
         send_message(MSG_EKF_STATUS_REPORT);
+        send_message(MSG_MOTORCONSTADP);
         send_message(MSG_VIBRATION);
         send_message(MSG_RPM);
     }

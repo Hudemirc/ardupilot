@@ -142,6 +142,8 @@ void Copter::tuning() {
         // set rangefinder gain
         g.rangefinder_gain.set(tuning_value);
         break;
+    
+   
 
 #if 0
         // disabled for now - we need accessor functions

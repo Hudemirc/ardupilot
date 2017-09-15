@@ -259,7 +259,170 @@ void AC_AttitudeControl_Multi::rate_controller_run()
     _motors.set_roll(rate_target_to_motor_roll(gyro_latest.x, _rate_target_ang_vel.x));
     _motors.set_pitch(rate_target_to_motor_pitch(gyro_latest.y, _rate_target_ang_vel.y));
     _motors.set_yaw(rate_target_to_motor_yaw(gyro_latest.z, _rate_target_ang_vel.z));
+    
+    control_monitor_update();
+}
 
+void AC_AttitudeControl_Multi::rate_controller_runadp()
+{
+    // move throttle vs attitude mixing towards desired (called from here because this is conveniently called on every iteration)
+    update_throttle_rpy_mix();
+    float _pid_roll_for_adp;
+    float _pid_pitch_for_adp;
+    float _pid_yaw_for_adp;
+    float _thrust_for_adp;
+    float _adp_roll_output;
+    float _adp_pitch_output;
+    float _adp_yaw_output;
+    float _adp_thrust_output;
+    float _omega1sq;
+    float _omega2sq;
+    float _omega3sq;
+    float _omega4sq;
+    float _motorConstantMatrix[16];
+    float _tempterm;
+    float _Gksi_roll[no_sinusoidal];
+    float _Geta_roll[no_sinusoidal];
+    float _oldbeta_roll[no_sinusoidal];
+    float _oldeta0_roll[no_sinusoidal];
+    float _oldbeta1_roll[no_sinusoidal];
+    float _oldeta1_roll[no_sinusoidal];
+    float _oldksi_roll[no_sinusoidal];
+
+    Vector3f gyro_latest = _ahrs.get_gyro_latest();
+  
+    for (int i=0;i<no_sinusoidal;i++){
+        _oldeta0_roll[i] = _eta0_roll[i];
+        _oldksi_roll[i]  = _ksi_roll[i] ;
+        _oldbeta_roll[i] = _beta_roll[i];
+        _oldbeta1_roll[i] = _beta1_roll[i];
+        _oldeta1_roll[i] = _eta1_roll[i];
+    }
+    _gyroxdata=gyro_latest.x;
+    if (is_zero(_resetting_adp_sin_values)){
+        for (int i=0;i<no_sinusoidal;i++){
+            for (int j=0;j<no_sinusoidal;j++){
+                _Gksi_roll[i]  += _Gmatrix[i*no_sinusoidal+j]*_ksi_roll[j];
+                _Geta_roll[i]  += _Gmatrix[i*no_sinusoidal+j]*_eta1_roll[j];
+            }
+            _eta0_roll[i] = _eta0_roll[i] + _dt*(_Gksi_roll[i]-_Lmatrix[i]*(_motors.get_omega2sqadp()-_motors.get_omega1sqadp() ));
+            if(isnan(_eta0_roll[i]) || (fabsf(_eta0_roll[i]) >10.0*10.0)) _eta0_roll[i]=_oldeta0_roll[i];
+            _eta1_roll[i] = _eta1_roll[i] + _dt*(_Gksi_roll[i]-_Lmatrix[i]);
+            if(isnan(_eta1_roll[i]) || (fabsf(_eta1_roll[i]) >10.0*10.0)) _eta0_roll[i]=_oldeta1_roll[i];
+            _ksi_roll[i]  = _eta0_roll[i] + _Lmatrix[i] * _gyroxdata;
+            if(isnan(_ksi_roll[i]) || ( fabsf(_ksi_roll[i]) >10.0*10.0)) _ksi_roll[i]=_oldksi_roll[i];
+            _beta_roll[i] = _beta_roll[i]  - (-_error_roll_adp[0]/4.5f/_kpkdratioadp + _error_roll_adp[1] /0.0036f*_kpkdratioadp )*_ksi_roll[i] *_beta_gainadp*_dt;
+            if(isnan(_beta_roll[i]) || ( fabsf(_beta_roll[i]) >10.0*10.0)) _beta_roll[i]=_oldbeta_roll[i];
+            _beta1_roll[i] = _beta1_roll[i]  - (-_error_roll_adp[0]/4.5f/_kpkdratioadp + _error_roll_adp[1] /0.0036f*_kpkdratioadp )*_eta1_roll[i] *_beta_gainadp*_dt;
+            if(isnan(_beta1_roll[i]) || ( fabsf(_beta1_roll[i]) >10.0*10.0)) _beta1_roll[i]=_oldbeta1_roll[i];
+            _sin_dist_roll =_sin_dist_roll + _beta_roll[i]*_ksi_roll[i] + _beta1_roll[i]*_eta1_roll[i];
+        }
+    }else  {
+        for (int i=0;i<no_sinusoidal;i++){
+            _eta0_roll[i] = 0.0f;
+            _eta1_roll[i] = 0.0f;
+            _ksi_roll[i]  = 0.0f;
+            _beta_roll[i] = 0.0f;
+            _beta1_roll[i] = 0.0f;
+            _sin_dist_roll =0.0f;
+        
+        }
+    }
+
+    _sin_dist_roll = constrain_float(_sin_dist_roll, -.3f, .3f);
+
+    
+    _pid_roll_for_adp=rate_target_to_motor_roll(gyro_latest.x, _rate_target_ang_vel.x)-_sin_dist_roll;
+    _pid_pitch_for_adp=rate_target_to_motor_pitch(gyro_latest.y, _rate_target_ang_vel.y);
+    _pid_yaw_for_adp=rate_target_to_motor_yaw(gyro_latest.z, _rate_target_ang_vel.z);
+    _thrust_for_adp=_motors.get_throttle();
+    control_monitor_update();
+
+    _rollpidbefore=_pid_roll_for_adp;
+    _pitchpidbefore=_pid_pitch_for_adp;
+    _yawpidbefore=_pid_yaw_for_adp;
+    _thrpidbefore=_thrust_for_adp;
+
+    _tempterm=_p_adp1*_p_adp3*_q_adp2 + _p_adp2*_p_adp3*_q_adp1 + _p_adp1*_p_adp4*_q_adp2 +_p_adp2*_p_adp4*_q_adp1+_p_adp1*_p_adp3*_q_adp4 + _p_adp1*_p_adp4*_q_adp3 + _p_adp2*_p_adp3*_q_adp4 +_p_adp2*_p_adp4*_q_adp3;
+    
+
+    _motorConstantMatrix[0]   = -(_p_adp3*_q_adp2 + _p_adp4*_q_adp2 + _p_adp3*_q_adp4 + _p_adp4*_q_adp3)/_tempterm;
+    _motorConstantMatrix[1]   =  (_p_adp2*_q_adp3 - _p_adp2*_q_adp4) / _tempterm;
+    _motorConstantMatrix[2]   =  (_p_adp2*_p_adp3 + _p_adp2*_p_adp4) / _tempterm;
+    _motorConstantMatrix[3]   =  (_p_adp2*_p_adp3*_q_adp4 + _p_adp2*_p_adp4*_q_adp3) /_tempterm;
+    _motorConstantMatrix[4]   =  (_p_adp3*_q_adp1 + _p_adp4*_q_adp1 + _p_adp3*_q_adp4 + _p_adp4*_q_adp3)/_tempterm;
+    _motorConstantMatrix[5]   =  (_p_adp1*_q_adp3 - _p_adp1*_q_adp4) / _tempterm;
+    _motorConstantMatrix[6]   =  (_p_adp1*_p_adp3 + _p_adp1*_p_adp4) / _tempterm;
+    _motorConstantMatrix[7]   =  (_p_adp1*_p_adp3*_q_adp4 + _p_adp1*_p_adp4*_q_adp3) / _tempterm;
+    _motorConstantMatrix[8]   = -(_p_adp4*_q_adp1 - _p_adp4*_q_adp2) / _tempterm;
+    _motorConstantMatrix[9]   =  (_p_adp1*_q_adp2 + _p_adp2*_q_adp1 + _p_adp1*_q_adp4 + _p_adp2*_q_adp4)/_tempterm;
+    _motorConstantMatrix[10]  = -(_p_adp4*_p_adp1 + _p_adp4*_p_adp2) / _tempterm;
+    _motorConstantMatrix[11]  =  (_p_adp4*_p_adp1*_q_adp2 + _p_adp4*_p_adp2*_q_adp1) /_tempterm;
+    _motorConstantMatrix[12]  = -(_p_adp3*_q_adp1 - _p_adp3*_q_adp2) / _tempterm;
+    _motorConstantMatrix[13]  = -(_p_adp1*_q_adp2 + _p_adp2*_q_adp1 + _p_adp1*_q_adp3 + _p_adp2*_q_adp3)/_tempterm;
+    _motorConstantMatrix[14]  = -(_p_adp3*_p_adp1 + _p_adp3*_p_adp2 ) / (_tempterm);
+    _motorConstantMatrix[15]  =  (_p_adp3*_p_adp1*_q_adp2 + _p_adp3*_p_adp2*_q_adp1) / _tempterm;
+
+
+    _omega1sq=_motorConstantMatrix[0]  * _pid_roll_for_adp + _motorConstantMatrix[1]  * _pid_pitch_for_adp + _motorConstantMatrix[2]  * _pid_yaw_for_adp + _motorConstantMatrix[3]  * _thrust_for_adp;
+    _omega2sq=_motorConstantMatrix[4]  * _pid_roll_for_adp + _motorConstantMatrix[5]  * _pid_pitch_for_adp + _motorConstantMatrix[6]  * _pid_yaw_for_adp + _motorConstantMatrix[7]  * _thrust_for_adp;
+    _omega3sq=_motorConstantMatrix[8]  * _pid_roll_for_adp + _motorConstantMatrix[9]  * _pid_pitch_for_adp + _motorConstantMatrix[10] * _pid_yaw_for_adp + _motorConstantMatrix[11] * _thrust_for_adp;
+    _omega4sq=_motorConstantMatrix[12] * _pid_roll_for_adp + _motorConstantMatrix[13] * _pid_pitch_for_adp + _motorConstantMatrix[14] * _pid_yaw_for_adp + _motorConstantMatrix[15] * _thrust_for_adp;
+
+
+    _adp_roll_output   =  (_omega2sq - _omega1sq);
+    _adp_pitch_output  =  (_omega3sq - _omega4sq);
+    _adp_yaw_output    =  (_omega1sq + _omega2sq - _omega3sq - _omega4sq)/2.0f ;
+    _adp_thrust_output =  (_omega1sq + _omega2sq + _omega3sq + _omega4sq) ;
+
+    
+    _p_adp1= _p_adp1 - _dt*(-_error_roll_adp[0]/4.5f/_kpkdratioadp + _error_roll_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega1sqadp() * _p_gainadp;
+    _p_adp2= _p_adp2 + _dt*(-_error_roll_adp[0]/4.5f/_kpkdratioadp + _error_roll_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega2sqadp() * _p_gainadp;
+    _p_adp3= _p_adp3 + _dt*(-_error_pitch_adp[0]/4.5f/_kpkdratioadp + _error_pitch_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega3sqadp() * _p_gainadp;
+    _p_adp4= _p_adp4 - _dt*(-_error_pitch_adp[0]/4.5f/_kpkdratioadp + _error_pitch_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega4sqadp() * _p_gainadp;
+    _q_adp1= _q_adp1 + _dt*(-_error_yaw_adp[0]/4.5f/_kpkdratioadp + _error_yaw_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega1sqadp() * _q_gainadp;
+    _q_adp2= _q_adp2 + _dt*(-_error_yaw_adp[0]/4.5f/_kpkdratioadp + _error_yaw_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega2sqadp() * _q_gainadp;
+    _q_adp3= _q_adp3 - _dt*(-_error_yaw_adp[0]/4.5f/_kpkdratioadp + _error_yaw_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega3sqadp() * _q_gainadp;
+    _q_adp4= _q_adp4 - _dt*(-_error_yaw_adp[0]/4.5f/_kpkdratioadp + _error_yaw_adp[1] /0.0036f*_kpkdratioadp ) * _motors.get_omega4sqadp() * _q_gainadp;
+    
+    
+    if (_resetting_adp_values>0.95 && _resetting_adp_values<1.05){
+        _p_adp1=1.0f;
+        _p_adp2=1.0f;
+        _p_adp3=1.0f;
+        _p_adp4=1.0f;
+        _q_adp1=0.5f;
+        _q_adp2=0.5f;
+        _q_adp3=0.5f;
+        _q_adp4=0.5f;
+    }
+
+    _p_adp1=constrain_float(_p_adp1, (1.0f-_motorConstantProjection), (1.0f+_motorConstantProjection));
+    _p_adp2=constrain_float(_p_adp2, (1.0f-_motorConstantProjection), (1.0f+_motorConstantProjection));
+    _p_adp3=constrain_float(_p_adp3, (1.0f-_motorConstantProjection), (1.0f+_motorConstantProjection));
+    _p_adp4=constrain_float(_p_adp4, (1.0f-_motorConstantProjection), (1.0f+_motorConstantProjection));
+    _q_adp1=constrain_float(_q_adp1, (1.0f-_motorConstantProjection)/2.0f, (1.0f+_motorConstantProjection)/2.0f);
+    _q_adp2=constrain_float(_q_adp2, (1.0f-_motorConstantProjection)/2.0f, (1.0f+_motorConstantProjection)/2.0f);
+    _q_adp3=constrain_float(_q_adp3, (1.0f-_motorConstantProjection)/2.0f, (1.0f+_motorConstantProjection)/2.0f);
+    _q_adp4=constrain_float(_q_adp4, (1.0f-_motorConstantProjection)/2.0f, (1.0f+_motorConstantProjection)/2.0f);
+
+    
+
+    
+    
+    
+   
+    _rollpidafter=_adp_roll_output;
+    _pitchpidafter=_adp_pitch_output;
+    _yawpidafter=_adp_yaw_output;
+    _thrpidafter=_adp_thrust_output;
+
+    _motors.set_roll(_adp_roll_output);
+    _motors.set_pitch(_adp_pitch_output);
+    _motors.set_yaw(_adp_yaw_output);
+    _motors.set_throttleadp(_adp_thrust_output);
+
+    
     control_monitor_update();
 }
 

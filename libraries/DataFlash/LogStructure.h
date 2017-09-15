@@ -100,6 +100,21 @@ struct PACKED log_Vibe {
     uint32_t clipping_0, clipping_1, clipping_2;
 };
 
+struct PACKED log_MotorConstAdp1 {
+    LOG_PACKET_HEADER;
+    float p1_adp_data, p2_adp_data, p3_adp_data,p4_adp_data,q1_adp_data,q2_adp_data,q3_adp_data,q4_adp_data;
+};
+
+struct PACKED log_MotorConstAdp2 {
+    LOG_PACKET_HEADER;
+    float Projection_data,kpkdratio_data,pgain_data,rollpidbef_data,rollpidaft_data,ptchpidbef_data,ptchpidaft_data,yawpidbef_data,yawpidaft_data,thrpidbef_data,thrpidaft_data;
+};
+
+struct PACKED log_MotorConstAdp3 {
+    LOG_PACKET_HEADER;
+    float sinroll_data,ksi0_data,ksi1_data,ksi2_data,beta0_data,beta1_data,beta2_data,gyroxx_data;
+};
+
 struct PACKED log_Gimbal1 {
     LOG_PACKET_HEADER;
     uint32_t time_ms;
@@ -987,6 +1002,12 @@ Format characters in the format string for binary log messages
       "BAR3",  BARO_FMT, BARO_LABELS }, \
     { LOG_VIBE_MSG, sizeof(log_Vibe), \
       "VIBE", "QfffIII",     "TimeUS,VibeX,VibeY,VibeZ,Clip0,Clip1,Clip2" }, \
+    { LOG_MOTCNST1_MSG, sizeof(log_MotorConstAdp1), \
+      "MCD1", "ffffffff",     "p1,p2,p3,p4,q1,q2,q3,q4" }, \
+    { LOG_MOTCNST2_MSG, sizeof(log_MotorConstAdp2), \
+      "MCD2", "fffffffffff",     "proj,kpkd,pgain,rpb,rpa,ppb,ppa,ypb,ypa,tpb,tpa" }, \
+    { LOG_MOTCNST3_MSG, sizeof(log_MotorConstAdp3), \
+      "MCD3", "ffffffff",     "sinr,ksi0,ksi1,ksi2,beta0,beta1,beta2,gyrox" }, \
     { LOG_IMUDT_MSG, sizeof(log_IMUDT), \
       "IMT",IMT_FMT,IMT_LABELS }, \
     { LOG_IMUDT2_MSG, sizeof(log_IMUDT), \
@@ -1115,7 +1136,9 @@ enum LogMessages {
     LOG_XKF9_MSG,
     LOG_XKF10_MSG,
     LOG_DF_MAV_STATS,
-
+    LOG_MOTCNST1_MSG,
+    LOG_MOTCNST2_MSG,
+    LOG_MOTCNST3_MSG,
     LOG_MSG_SBPHEALTH,
     LOG_MSG_SBPLLH,
     LOG_MSG_SBPBASELINE,

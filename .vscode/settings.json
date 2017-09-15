@@ -1,0 +1,22 @@
+{
+    "files.associations": {
+        "*.ipp": "cpp",
+        "complex": "cpp",
+        "system_error": "cpp",
+        "istream": "cpp",
+        "iterator_base": "cpp",
+        "list": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "type_traits": "cpp",
+        "up_touchscreen.c": "cpp",
+        "tsc2007.c": "cpp",
+        "nxglib_splitline.c": "cpp",
+        "lib_dtoa.c": "cpp",
+        "cmath": "cpp",
+        "test_int.c": "cpp",
+        "lconf.c": "cpp",
+        "main.c": "cpp",
+        "lib_fabsf.c": "cpp"
+    }
+}

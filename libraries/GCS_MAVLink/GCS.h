@@ -16,6 +16,7 @@
 #include <AP_Avoidance/AP_Avoidance.h>
 #include <AP_HAL/utility/RingBuffer.h>
 #include <AP_Frsky_Telem/AP_Frsky_Telem.h>
+#include <AC_AttitudeControl/AC_AttitudeControl_Multi.h> 
 
 // check if a message will fit in the payload space available
 #define HAVE_PAYLOAD_SPACE(chan, id) (comm_get_txspace(chan) >= GCS_MAVLINK::packet_overhead_chan(chan)+MAVLINK_MSG_ID_ ## id ## _LEN)
@@ -70,6 +71,7 @@ enum ap_message {
     MSG_MISSION_ITEM_REACHED,
     MSG_POSITION_TARGET_GLOBAL_INT,
     MSG_ADSB_VEHICLE,
+    MSG_MOTORCONSTADP,
     MSG_RETRY_DEFERRED // this must be last
 };
 
@@ -203,8 +205,10 @@ public:
     bool telemetry_delayed(mavlink_channel_t chan);
     virtual uint32_t telem_delay() const = 0;
 
+
 protected:
 
+    
     // overridable method to check for packet acceptance. Allows for
     // enforcement of GCS sysid
     virtual bool accept_packet(const mavlink_status_t &status, mavlink_message_t &msg) { return true; }
@@ -402,6 +406,7 @@ class GCS
 
 public:
 
+
     GCS() {
         if (_singleton  == nullptr) {
             _singleton = this;
@@ -460,5 +465,7 @@ private:
     ObjectArray<statustext_t> _statustext_queue{_status_capacity};
 
 };
+
+
 
 GCS &gcs();

@@ -70,6 +70,7 @@ public:
     void                set_roll(float roll_in) { _roll_in = roll_in; };        // range -1 ~ +1
     void                set_pitch(float pitch_in) { _pitch_in = pitch_in; };    // range -1 ~ +1
     void                set_yaw(float yaw_in) { _yaw_in = yaw_in; };            // range -1 ~ +1
+    void                set_throttleadp(float throttleadp) { _throttleadp = throttleadp; };            // range -1 ~ +1
     void                set_throttle(float throttle_in) { _throttle_in = throttle_in; };   // range 0 ~ 1
     void                set_throttle_avg_max(float throttle_avg_max) { _throttle_avg_max = constrain_float(throttle_avg_max,0.0f,1.0f); };   // range 0 ~ 1
     void                set_throttle_filter_cutoff(float filt_hz) { _throttle_filter.set_cutoff_frequency(filt_hz); }
@@ -84,6 +85,11 @@ public:
     float               get_throttle_bidirectional() const { return constrain_float(2*(_throttle_filter.get()-0.5f),-1.0f,1.0f); }
     float               get_forward() const { return _forward_in; }
     float               get_lateral() const { return _lateral_in; }
+
+    float               get_omega1sqadp()  { return _omega1sq_adp; }
+    float               get_omega2sqadp()  { return _omega2sq_adp; }
+    float               get_omega3sqadp()  { return _omega3sq_adp; }
+    float               get_omega4sqadp()  { return _omega4sq_adp; }
     virtual float       get_throttle_hover() const = 0;
 
     // spool up states
@@ -160,6 +166,7 @@ public:
 protected:
     // output functions that should be overloaded by child classes
     virtual void        output_armed_stabilizing()=0;
+    virtual void        output_armed_stabilizingadp()=0;
     virtual void        rc_write(uint8_t chan, uint16_t pwm);
     virtual void        rc_set_freq(uint32_t mask, uint16_t freq_hz);
     virtual void        rc_enable_ch(uint8_t chan);
@@ -193,6 +200,11 @@ protected:
     float               _roll_in;                   // desired roll control from attitude controllers, -1 ~ +1
     float               _pitch_in;                  // desired pitch control from attitude controller, -1 ~ +1
     float               _yaw_in;                    // desired yaw control from attitude controller, -1 ~ +1
+    float               _throttleadp;               // ADAPTIVE
+    float               _omega1sq_adp;
+    float               _omega2sq_adp;
+    float               _omega3sq_adp;
+    float               _omega4sq_adp;
     float               _throttle_in;               // last throttle input from set_throttle caller
     float               _forward_in;                // last forward input from set_forward caller
     float               _lateral_in;                // last lateral input from set_lateral caller

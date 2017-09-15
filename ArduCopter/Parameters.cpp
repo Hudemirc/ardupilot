@@ -306,42 +306,42 @@ const AP_Param::Info Copter::var_info[] = {
     // @Param: FLTMODE1
     // @DisplayName: Flight Mode 1
     // @Description: Flight mode when Channel 5 pwm is <= 1230
-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS
+    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,22:StabilizeAdp
     // @User: Standard
     GSCALAR(flight_mode1, "FLTMODE1",               FLIGHT_MODE_1),
 
     // @Param: FLTMODE2
     // @DisplayName: Flight Mode 2
     // @Description: Flight mode when Channel 5 pwm is >1230, <= 1360
-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS
+    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,22:StabilizeAdp
     // @User: Standard
     GSCALAR(flight_mode2, "FLTMODE2",               FLIGHT_MODE_2),
 
     // @Param: FLTMODE3
     // @DisplayName: Flight Mode 3
     // @Description: Flight mode when Channel 5 pwm is >1360, <= 1490
-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS
+    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,22:StabilizeAdp
     // @User: Standard
     GSCALAR(flight_mode3, "FLTMODE3",               FLIGHT_MODE_3),
 
     // @Param: FLTMODE4
     // @DisplayName: Flight Mode 4
     // @Description: Flight mode when Channel 5 pwm is >1490, <= 1620
-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS
+    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,22:StabilizeAdp
     // @User: Standard
     GSCALAR(flight_mode4, "FLTMODE4",               FLIGHT_MODE_4),
 
     // @Param: FLTMODE5
     // @DisplayName: Flight Mode 5
     // @Description: Flight mode when Channel 5 pwm is >1620, <= 1749
-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS
+    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,22:StabilizeAdp
     // @User: Standard
     GSCALAR(flight_mode5, "FLTMODE5",               FLIGHT_MODE_5),
 
     // @Param: FLTMODE6
     // @DisplayName: Flight Mode 6
     // @Description: Flight mode when Channel 5 pwm is >=1750
-    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS
+    // @Values: 0:Stabilize,1:Acro,2:AltHold,3:Auto,4:Guided,5:Loiter,6:RTL,7:Circle,9:Land,11:Drift,13:Sport,14:Flip,15:AutoTune,16:PosHold,17:Brake,18:Throw,19:Avoid_ADSB,20:Guided_NoGPS,22:StabilizeAdp
     // @User: Standard
     GSCALAR(flight_mode6, "FLTMODE6",               FLIGHT_MODE_6),
 
@@ -364,13 +364,13 @@ const AP_Param::Info Copter::var_info[] = {
     // @Description: Controls whether ArduCopter will enter ESC calibration on the next restart.  Do not adjust this parameter manually.
     // @User: Advanced
     // @Values: 0:Normal Start-up, 1:Start-up in ESC Calibration mode if throttle high, 2:Start-up in ESC Calibration mode regardless of throttle, 3:Start-up and automatically calibrate ESCs, 9:Disabled
-    GSCALAR(esc_calibrate, "ESC_CALIBRATION",       0),
+    GSCALAR(esc_calibrate, "ESC_CALIBRATION",       1),
 
     // @Param: TUNE
     // @DisplayName: Channel 6 Tuning
     // @Description: Controls which parameters (normally PID gains) are being tuned with transmitter's channel 6 knob
     // @User: Standard
-    // @Values: 0:None,1:Stab Roll/Pitch kP,4:Rate Roll/Pitch kP,5:Rate Roll/Pitch kI,21:Rate Roll/Pitch kD,3:Stab Yaw kP,6:Rate Yaw kP,26:Rate Yaw kD,56:Rate Yaw Filter,55:Motor Yaw Headroom,14:AltHold kP,7:Throttle Rate kP,34:Throttle Accel kP,35:Throttle Accel kI,36:Throttle Accel kD,12:Loiter Pos kP,22:Velocity XY kP,28:Velocity XY kI,10:WP Speed,25:Acro RollPitch kP,40:Acro Yaw kP,45:RC Feel,13:Heli Ext Gyro,38:Declination,39:Circle Rate,41:RangeFinder Gain,46:Rate Pitch kP,47:Rate Pitch kI,48:Rate Pitch kD,49:Rate Roll kP,50:Rate Roll kI,51:Rate Roll kD,52:Rate Pitch FF,53:Rate Roll FF,54:Rate Yaw FF
+    // @Values: 0:None,1:Stab Roll/Pitch kP,4:Rate Roll/Pitch kP,5:Rate Roll/Pitch kI,21:Rate Roll/Pitch kD,3:Stab Yaw kP,6:Rate Yaw kP,26:Rate Yaw kD,56:Rate Yaw Filter,55:Motor Yaw Headroom,14:AltHold kP,7:Throttle Rate kP,34:Throttle Accel kP,35:Throttle Accel kI,36:Throttle Accel kD,12:Loiter Pos kP,22:Velocity XY kP,28:Velocity XY kI,10:WP Speed,25:Acro RollPitch kP,40:Acro Yaw kP,45:RC Feel,13:Heli Ext Gyro,38:Declination,39:Circle Rate,41:RangeFinder Gain,46:Rate Pitch kP,47:Rate Pitch kI,48:Rate Pitch kD,49:Rate Roll kP,50:Rate Roll kI,51:Rate Roll kD,52:Rate Pitch FF,53:Rate Roll FF,54:Rate Yaw FF,57: ProjForMotCnsts
     GSCALAR(radio_tuning, "TUNE",                   0),
 
     // @Param: TUNE_LOW
@@ -869,6 +869,105 @@ const AP_Param::Info Copter::var_info[] = {
     // @Group: NTF_
     // @Path: ../libraries/AP_Notify/AP_Notify.cpp
     GOBJECT(notify, "NTF_",  AP_Notify),
+
+    // @Param: ADP_MOT_CNST_PRJ
+    // @DisplayName: Motor Constant Projection
+    // @Description: Defines the bound of Motor Constant
+    // @Range: .01 .7
+    // @User: Advanced
+    GSCALAR(motorConstantProjection1, "ADP_MOT_CNST_PRJ", ADP_MOT_CNST_PRJ_DEFAULT),
+
+    // @Param: ADP_P_GAIN
+    // @DisplayName: Adaptive pitch and roll gain
+    // @Description: Defines the gain of Motor Roll and Pitch ConstantEstimation Gains
+    // @Range: 0.0 1000.00
+    // @User: Advanced
+    GSCALAR(p_gain_adp1, "ADP_P_GAIN", ADP_P_GAIN_DEFAULT),
+
+    // @Param: ADP_BETA_GAIN
+    // @DisplayName: Adaptive beta gain
+    // @Description: Defines the gain of beta gains
+    // @Range: 0.0 1000.00
+    // @User: Advanced
+    GSCALAR(beta_gain_adp1, "ADP_BETA_GAIN", ADP_BETA_GAIN_DEFAULT),
+
+    // @Param: ADP_Q_GAIN
+    // @DisplayName: Adaptive yaw gain
+    // @Description: Defines the gain of Motor Yaw Constant Estimation Gains
+    // @Range: 0.0 100.00
+    // @User: Advanced
+    GSCALAR(q_gain_adp1, "ADP_Q_GAIN", ADP_Q_GAIN_DEFAULT),
+
+    // @Param: ADP_KPKD_RATIO
+    // @DisplayName: The ratio for error terms in update laws
+    // @Description: Defines the ratio of error terms in update laws
+    // @Range: 0.01 100.00
+    // @User: Advanced
+    GSCALAR(kpkdratioadp1, "ADP_KPKD_RATIO", ADP_KPKD_RATIO_DEFAULT),
+
+    // @Param: ADP_RESET_VALUES
+    // @DisplayName: Resetting values
+    // @Description: Resetting values
+    // @Range: 0 1
+    // @User: Advanced
+    GSCALAR(adp_resetting, "ADP_RESET_VALUES", ADP_RESET_VALUES_DEFAULT),
+
+    // @Param: ADP_SIN_RESET
+    // @DisplayName: Resetting values for sin
+    // @Description: Resetting values for sin
+    // @Range: 0 1
+    // @User: Advanced
+    GSCALAR(adpsin_res, "ADP_SIN_RESET", ADP_SIN_RESET_DEFAULT),
+
+    // @Param: ADP_GMATRIX1
+    // @DisplayName: G matrix 1st value
+    // @Description: G matrix 1st value
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(gmatrixadp1, "ADP_GMATRIX1", ADP_GMATRIX1_DEFAULT),
+ 
+    // @Param: ADP_GMATRIX2
+    // @DisplayName: G matrix 2nd value
+    // @Description: G matrix 2nd value
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(gmatrixadp2, "ADP_GMATRIX2", ADP_GMATRIX2_DEFAULT),
+
+    // @Param: ADP_GMATRIX3
+    // @DisplayName: G matrix 3st value
+    // @Description: G matrix 3st value
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(gmatrixadp3, "ADP_GMATRIX3", ADP_GMATRIX3_DEFAULT),
+ 
+    // @Param: ADP_GMATRIX4
+    // @DisplayName: G matrix 4th value
+    // @Description: G matrix 4th value
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(gmatrixadp4, "ADP_GMATRIX4", ADP_GMATRIX4_DEFAULT),
+
+    // @Param: ADP_GMATRIX5
+    // @DisplayName: G matrix 5th value
+    // @Description: G matrix 5th value
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(gmatrixadp5, "ADP_GMATRIX5", ADP_GMATRIX5_DEFAULT),
+ 
+    // @Param: ADP_GMATRIX6
+    // @DisplayName: G matrix 6nd value
+    // @Description: G matrix 6nd value
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(gmatrixadp6, "ADP_GMATRIX6", ADP_GMATRIX6_DEFAULT),
+
+    // @Param: ADP_LMATRIX
+    // @DisplayName: L matrix
+    // @Description: L matrix
+    // @Range: 0 50
+    // @User: Advanced
+    GSCALAR(lmatrixadp, "ADP_LMATRIX", ADP_LMATRIX_DEFAULT),
+    
 
     // @Param: THROW_MOT_START
     // @DisplayName: Start motors before throwing is detected
